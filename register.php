@@ -14,8 +14,8 @@
 
         if(isset($_POST['submit'])){
             $email = $_POST['email'];
-            $password = md5($_POST['password']);
-            $re_password = md5($_POST['re-password']);
+            $password = $_POST['password'];
+            $re_password = $_POST['re-password'];
 
             if($password !== $re_password) {
                 echo "<div class='message'>
@@ -24,24 +24,36 @@
                 echo "<a href='javascript:self.history.back()'><button>Go back</button></a>";
             } 
             else {
-                //verifying the unique email
-                $verify_query = mysqli_query($con, "SELECT email FROM users WHERE email='$email'");
+                // Password validation
+                if (strlen($password) < 8 || !preg_match('/[A-Z]/', $password) || !preg_match('/[^a-zA-Z0-9]/', $password)) {
+                    echo "<div class='message'>
+                        <p>Password must be at least 8 characters long, start with an uppercase letter, and contain at least one special character.</p>
+                    </div>";
+                    echo "<a href='javascript:self.history.back()'><button>Go back</button></a>";
+                } 
+                else {
+                    $hashed_password = md5($password);
 
-                if(mysqli_num_rows($verify_query) != 0){
-                    echo "<div class='message'>
-                        <p>This email is used, Please Try Another one!!!</p>
-                    </div>";
-                    echo "<a href='javascript:self.history.back()'><button>Go back</button>";
-                }
-                else{
-                    mysqli_query($con, "INSERT INTO users(email, password, repeat_password) VALUES('$email','$password','$re_password')") or die("Error Occured!!!");
-                    echo "<div class='message'>
-                        <p>Registration Successfull !!!</p>
-                    </div>";
-                    echo "<a href='login.php'><button>Login Now</button>";
+                    //verifying the unique email
+                    $verify_query = mysqli_query($con, "SELECT email FROM users WHERE email='$email'");
+
+                    if(mysqli_num_rows($verify_query) != 0){
+                        echo "<div class='message'>
+                            <p>This email is used, Please Try Another one!!!</p>
+                        </div>";
+                        echo "<a href='javascript:self.history.back()'><button>Go back</button>";
+                    }
+                    else{
+                        mysqli_query($con, "INSERT INTO users(email, password, repeat_password) VALUES('$email','$hashed_password','$hashed_password')") or die("Error Occured!!!");
+                        echo "<div class='message'>
+                            <p>Registration Successfull !!!</p>
+                        </div>";
+                        echo "<a href='login.php'><button>Login Now</button>";
+                        }
                     }
                 }
-        }else{
+        }
+        else{
     ?>
     <div class="background">
     </div>
