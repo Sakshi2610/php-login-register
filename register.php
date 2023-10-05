@@ -17,22 +17,30 @@
             $password = md5($_POST['password']);
             $re_password = md5($_POST['re-password']);
 
-            //verifying the unique email
-            $verify_query = mysqli_query($con, "SELECT email FROM users WHERE email='$email'");
+            if($password !== $re_password) {
+                echo "<div class='message'>
+                    <p>Passwords do not match. Please try again.</p>
+                </div>";
+                echo "<a href='javascript:self.history.back()'><button>Go back</button></a>";
+            } 
+            else {
+                //verifying the unique email
+                $verify_query = mysqli_query($con, "SELECT email FROM users WHERE email='$email'");
 
-            if(mysqli_num_rows($verify_query) != 0){
-                echo "<div class='message'>
-                    <p>This email is used, Please Try Another one!!!</p>
-                </div>";
-                echo "<a href='javascript:self.history.back()'><button>Go back</button>";
-            }
-            else{
-                mysqli_query($con, "INSERT INTO users(email, password, repeat_password) VALUES('$email','$password','$re_password')") or die("Error Occured!!!");
-                echo "<div class='message'>
-                    <p>Registration Successfull !!!</p>
-                </div>";
-                echo "<a href='login.php'><button>Login Now</button>";
-            }
+                if(mysqli_num_rows($verify_query) != 0){
+                    echo "<div class='message'>
+                        <p>This email is used, Please Try Another one!!!</p>
+                    </div>";
+                    echo "<a href='javascript:self.history.back()'><button>Go back</button>";
+                }
+                else{
+                    mysqli_query($con, "INSERT INTO users(email, password, repeat_password) VALUES('$email','$password','$re_password')") or die("Error Occured!!!");
+                    echo "<div class='message'>
+                        <p>Registration Successfull !!!</p>
+                    </div>";
+                    echo "<a href='login.php'><button>Login Now</button>";
+                    }
+                }
         }else{
     ?>
     <div class="background">
